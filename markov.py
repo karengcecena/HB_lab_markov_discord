@@ -2,6 +2,8 @@
 
 import sys
 from random import choice
+import os 
+import discord
 
 
 def open_and_read_file(filenames):
@@ -55,6 +57,8 @@ def make_text(chains):
     return ' '.join(words)
 
 
+### Code from How to get started
+
 # Get the filenames from the user through a command line prompt, ex:
 # python markov.py green-eggs.txt shakespeare.txt
 filenames = sys.argv[1:]
@@ -64,3 +68,31 @@ text = open_and_read_file(filenames)
 
 # Get a Markov chain
 chains = make_chains(text)
+
+intents = discord.Intents.default()
+intents.message_content = True
+
+client = discord.Client(intents=intents)
+
+@client.event
+async def on_ready():
+    print(f'Successfully connected! Logged in as {client.user}.')
+
+@client.event
+async def on_message(message):
+    if message.author == client.user:
+        return
+
+    # TODO: replace this with your code
+
+    if message.content.startswith('I') or message.content.startswith('hello') or message.content.startswith('i'):
+        await message.channel.send(make_text(chains))
+
+    elif message.content.startswith("sad"):
+        await message.channel.send(f"{message.author} {make_text(chains)}")
+    
+    elif message.content.startswith("fun"):
+        await message.channel.send(f"{message.author} {make_text(chains)}")
+
+
+client.run(os.environ['DISCORD_TOKEN'])
